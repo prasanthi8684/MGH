@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { connectDB } from './src/config/database.js';
 import authRoutes from './src/routes/authRoutes.js';
-
+import path from 'path';
 dotenv.config();
 
 const app = express();
@@ -13,6 +13,7 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname,"public")))
 
 // Routes
 app.use('/api/auth', authRoutes);
