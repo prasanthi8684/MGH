@@ -1,9 +1,10 @@
 import { User } from '../models/User.js';
 import { generateToken } from '../utils/generateToken.js';
 import { sendEmail } from '../utils/sendEmail.js';
+
 export const test = async (req, res) => {
-  console.log('test woring')
-}
+  console.log('Welcome to APIs')
+};
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -54,6 +55,7 @@ export const login = async (req, res) => {
     const { bussinessemail, password } = req.body;
 
     const user = await User.findOne({ bussinessemail }).select('+password');
+    // @ts-ignore
     if (user && (await user.matchPassword(password))) {
       res.json({
         id: user.id,
@@ -79,7 +81,9 @@ export const getProfile = async (req, res) => {
     if (user) {
       res.json({
         id: user.id,
+        // @ts-ignore
         name: user.name,
+        // @ts-ignore
         email: user.email,
       });
     } else {
@@ -98,11 +102,12 @@ export const forgotPassword = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    // Generate reset token
-    const resetToken = generateToken(user.id, '1h');
+
+    const resetToken = generateToken(user.id);
     
     // Save reset token to user
     user.resetPasswordToken = resetToken;
+    // @ts-ignore
     user.resetPasswordExpire = Date.now() + 3600000; // 1 hour
     await user.save();
 
