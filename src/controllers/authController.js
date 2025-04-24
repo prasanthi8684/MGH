@@ -81,11 +81,10 @@ export const getProfile = async (req, res) => {
     if (user) {
       res.json({
         id: user.id,
-        // @ts-ignore
-        name: user.name,
-        // @ts-ignore
-        email: user.email,
+        name: user.firstname,
+        email: user.bussinessemail,
       });
+      
     } else {
       res.status(404).json({ message: 'User not found' });
     }

@@ -41,6 +41,29 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire:{
     type: Date,
   },
+  branding: {
+    logo: String,
+    primaryColor: {
+      type: String,
+      default: '#FF0000'
+    },
+  },
+  secondaryColor: {
+    type: String,
+    default: '#000000'
+  },
+  addresses: [{
+    name: String,
+    street: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    country: String,
+    isDefault: {
+      type: Boolean,
+      default: false
+    }
+  }]
 }, {
   timestamps: true,
 });
