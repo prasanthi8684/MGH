@@ -7,6 +7,8 @@ import authRoutes from './src/routes/authRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
 import praposalRoutes from './src/routes/praposalRoutes.js';
 import imageRoutes from './src/routes/imageRoutes.js';
+import quotationRoutes from './src/routes/quotationRoutes.js';
+import userRoutes from './src/routes/userRoutes.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -31,10 +33,13 @@ const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/proposals', praposalRoutes);
+app.use('/api/quotations', quotationRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/upload', imageRoutes);
 const PORT = process.env.PORT || 5000;
 // Configure CORS
