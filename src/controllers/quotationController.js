@@ -3,6 +3,7 @@ import { uploadImages } from './imageController.js';
 
 export const createQuotation = async (req, res) => {
   try {
+    console.log('Test')
     const quotationData = req.body;
 console.log(quotationData)
     // Handle image uploads if present
