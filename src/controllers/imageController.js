@@ -7,12 +7,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export const uploadImages = async (req, res) => {
   try {
-   
-    if (!req.files || req.files.length === 0) {
+    if (!req.file) {
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const imageUrls = req.files[0].location;
+    const imageUrls = req.file.location;
     
     res.json({ imageUrls });
   } catch (error) {

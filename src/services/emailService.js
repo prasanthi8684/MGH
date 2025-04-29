@@ -1,19 +1,19 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.example.com',
+    host: 'smtp.gmail.com',
     port: 587,
     secure: false,
     auth: {
-      user: 'you@example.com',
-      pass: 'password'
+      user: 'cinna20070613@gmail.com',
+      pass: 'urxs ylcm zclg oqnf'
     }
   });
 
 export const sendEmail = async ({ to, subject, proposal, pdfBuffer }) => {
   const mailOptions = {
     from: `"MH GLOBAL" <${process.env.SMTP_USER}>`,
-    to,
+    to:'prasanthileela2007@gmail.com',
     subject,
     html: `
       <div style="font-family: Arial, sans-serif; color: #333;">

@@ -1,6 +1,6 @@
 import Proposal from '../models/Proposal.js';
 import { generateProposalPDF } from '../services/pdfGenerator.js';
-//import { sendEmail } from '../services/emailService.js';
+import { sendEmail } from '../services/emailService.js';
 
 // export const createProposal = async (req, res) => {
 //   try {
@@ -22,21 +22,31 @@ import { generateProposalPDF } from '../services/pdfGenerator.js';
 export const createProposal = async (req, res) => {
   try {
     // Get image URLs from multer-s3 upload
-    const imageUrls = req.files ? req.files.map(file => file.location) : [];
+    //const imageUrls = req.files ? req.files.map(file => file.location) : [];
     
     // Map image URLs to products
     const products = req.body.products.map((product, index) => ({
+    
       ...product,
-      images: imageUrls.slice(index * 3, (index + 1) * 3) // Assuming max 3 images per product
+      //image: imageUrls.slice(index * 3, (index + 1) * 3) // Assuming max 3 images per product
     }));
-
     const proposal = new Proposal({
       ...req.body,
       products,
       date: new Date(),
       totalAmount: products.reduce((sum, product) => sum + (product.quantity * product.unitPrice), 0)
     });
+    const pdfBuffer = await generateProposalPDF(proposal);
+  
+    await sendEmail({
+      to: proposal.clientEmail,
+      subject: `Proposal: ${proposal.name}`,
+      proposal,
+      pdfBuffer
+    });
 
+    // Update proposal status to sent
+    proposal.status = 'sent';
     await proposal.save();
     res.status(201).json(proposal);
   } catch (error) {

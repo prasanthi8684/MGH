@@ -63,7 +63,7 @@ const storage = multer.diskStorage({
 
 
 
-router.post('/', upload.array('images', 5), uploadImages);
+router.post('/', upload.single('image'), uploadImages);
 router.post('/apply-logo', applyLogoToImage);
 export default router;
 
