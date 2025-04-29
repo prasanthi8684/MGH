@@ -1,15 +1,25 @@
 import Product from '../../src/models/Product.js';
 import { uploadImage } from '../services/imageService.js';
 
+import AWS from 'aws-sdk';
+import multerS3 from 'multer-s3';
+import multer from 'multer';
+import { S3Client } from '@aws-sdk/client-s3';
+const spacesEndpoint = new AWS.Endpoint('https://mgh.blr1.digitaloceanspaces.com'); // use your region
+
+
+
 export const createProduct = async (req, res) => {
   try {
+    
     const { name, description, price, quantity, category, subcategory } = req.body;
-    const imageFiles = req.files;
+    const imageUrls = req.file.location;
 
-    const imageUrls = await Promise.all(
-      imageFiles.map(file => uploadImage(file))
-    );
-
+    // const imageUrls = await Promise.all(
+    //   imageFiles.map(file => uploadImage(file))
+    // );
+    // const imageUrls =uploadImage(imageFiles);
+    // console.log(imageUrls)
     const product = new Product({
       name,
       description,

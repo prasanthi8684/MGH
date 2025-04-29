@@ -11,7 +11,7 @@ const spacesEndpoint = new AWS.Endpoint('https://mgh.blr1.digitaloceanspaces.com
 
 const s3 = new S3Client({
   region: "blr1",
-  endpoint: "https://mgh.blr1.digitaloceanspaces.com", // for DigitalOcean
+  endpoint: "https://blr1.digitaloceanspaces.com", // for DigitalOcean
   credentials: {
     accessKeyId: 'DO009UBNGPNULMBAUMGP',
     secretAccessKey: '/BopSX8PXVAYh0Wvky9qyCtmL4WSa6Bk5g0soD3OXCg',
@@ -55,7 +55,7 @@ const storage = multer.diskStorage({
       bucket: 'mgh',
       acl: 'public-read',
       key: (req, file, cb) => {
-        cb(null, `uploads/${Date.now()}-${file.originalname}`);
+        cb(null, `praposals/${Date.now()}-${file.originalname}`);
       },
     }),
   });

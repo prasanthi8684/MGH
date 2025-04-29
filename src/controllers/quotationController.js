@@ -1,11 +1,12 @@
 import Quotation from '../models/Quotation.js';
 import { uploadImages } from './imageController.js';
+//import { generateQuotationPDF } from '../services/pdfGenerator.js';
+import { generateProposalPDF } from '../../pdfGenerator.js';
 
 export const createQuotation = async (req, res) => {
   try {
-    console.log('Test')
     const quotationData = req.body;
-console.log(quotationData)
+    
     // Handle image uploads if present
     if (req.files && req.files.length > 0) {
       const imageUrls = await uploadImages(req.files);
@@ -50,33 +51,20 @@ export const getQuotationById = async (req, res) => {
   }
 };
 
-export const updateQuotation = async (req, res) => {
+export const downloadQuotationPDF = async (req, res) => {
   try {
-    const quotationData = req.body;
-
-    // Handle image uploads if present
-    if (req.files && req.files.length > 0) {
-      const imageUrls = await uploadImages(req.files);
-      // Assign images to the respective products
-      quotationData.products = quotationData.products.map((product, index) => ({
-        ...product,
-        images: [...(product.images || []), ...imageUrls.slice(index * 3, (index + 1) * 3)]
-      }));
-    }
-
-    const quotation = await Quotation.findByIdAndUpdate(
-      req.params.id,
-      quotationData,
-      { new: true }
-    );
-
+    const quotation = await Quotation.findById(req.params.id);
     if (!quotation) {
       return res.status(404).json({ error: 'Quotation not found' });
     }
 
-    res.json(quotation);
+    const pdfBuffer = await generateProposalPDF(quotation);
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=quotation-${quotation._id}.pdf`);
+    res.send(pdfBuffer);
   } catch (error) {
-    console.error('Error updating quotation:', error);
+    console.error('Error generating PDF:', error);
     res.status(500).json({ error: error.message });
   }
 };

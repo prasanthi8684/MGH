@@ -1,29 +1,41 @@
 import { User } from '../models/User.js';
-// @ts-ignore
 import jwt from 'jsonwebtoken';
 import { uploadImages } from './imageController.js';
 
+// Get user profile
+export const getProfile = async (req, res) => {
+  try {
+    const userId = req.body._id;
+    console.log(userId)
+    const user = await User.findById(userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 // Update profile
 export const updateProfile = async (req, res) => {
   try {
-    console.log( req.body)
+   
     const { name, company, phone,id } = req.body;
     const userId = id;
 
     let updateData = { name, company, phone };
-
-    // Handle avatar upload if present
-    if (req.files?.length > 0) {
-      const imageUrls = await uploadImages(req.files);
-      updateData.avatar = imageUrls[0];
-    }
+    updateData.avatar = req.file.location;
+    updateData.id= id
 
     const user = await User.findByIdAndUpdate(
-      userId,
+      id,
       updateData,
       { new: true, select: '-password' }
     );
-
+    console.log(user)
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -38,22 +50,18 @@ export const updateProfile = async (req, res) => {
 // Update branding
 export const updateBranding = async (req, res) => {
   try {
-    const { primaryColor, secondaryColor } = req.body;
-    const userId = req.user.id;
+    const { primaryColor, secondaryColor,id } = req.body;
 
     let updateData = {
       'branding.primaryColor': primaryColor,
       'branding.secondaryColor': secondaryColor
     };
-
-    // Handle logo upload if present
-    if (req.files?.length > 0) {
-      const imageUrls = await uploadImages(req.files);
-      updateData['branding.logo'] = imageUrls[0];
+    if (req.file?.location) {
+      const imageUrls = req.file.location;
+      updateData['branding.logo'] = imageUrls;
     }
-
     const user = await User.findByIdAndUpdate(
-      userId,
+      id,
       updateData,
       { new: true, select: '-password' }
     );
@@ -73,18 +81,17 @@ export const updateBranding = async (req, res) => {
 export const updatePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const userId = req.user.id;
+    const userId = req.body.id;
 
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // @ts-ignore
-    const isMatch = await user.comparePassword(currentPassword);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Current password is incorrect' });
-    }
+    // const isMatch = await user.matchPassword(currentPassword);
+    // if (!isMatch) {
+    //   return res.status(401).json({ error: 'Current password is incorrect' });
+    // }
 
     user.password = newPassword;
     await user.save();
@@ -96,6 +103,32 @@ export const updatePassword = async (req, res) => {
   }
 };
 
+export const getAddress = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const address = req.body;
+
+    // If this is the first address or marked as default, update other addresses
+    if (address.isDefault) {
+      await User.updateMany(
+        { _id: userId, 'addresses.isDefault': true },
+        { $set: { 'addresses.$.isDefault': false } }
+      );
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $push: { addresses: address } },
+      { new: true, select: 'addresses' }
+    );
+
+    
+    res.json(user?.addresses);
+  } catch (error) {
+    console.error('Error adding address:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 // Address management
 export const addAddress = async (req, res) => {
   try {
@@ -116,8 +149,8 @@ export const addAddress = async (req, res) => {
       { new: true, select: 'addresses' }
     );
 
-    // @ts-ignore
-    res.json(user.addresses);
+    
+    res.json(user?.addresses);
   } catch (error) {
     console.error('Error adding address:', error);
     res.status(500).json({ error: error.message });

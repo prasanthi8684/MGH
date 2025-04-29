@@ -4,7 +4,7 @@ import {
   createQuotation,
   getQuotations,
   getQuotationById,
-  updateQuotation,
+  downloadQuotationPDF,
   deleteQuotation
 } from '../controllers/quotationController.js';
 
@@ -28,10 +28,13 @@ const upload = multer({
   }
 });
 
-router.post('/', upload.array('images', 15), createQuotation);
+// Apply authentication middleware
+
+//router.post('/', upload.array('images', 15), createQuotation);
+router.post('/',  createQuotation);
 router.get('/', getQuotations);
 router.get('/:id', getQuotationById);
-router.put('/:id', upload.array('images', 15), updateQuotation);
+router.get('/:id/pdf', downloadQuotationPDF);
 router.delete('/:id', deleteQuotation);
 
 export default router;

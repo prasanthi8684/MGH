@@ -52,6 +52,7 @@ export const register = async (req, res) => {
 // @access  Public
 export const login = async (req, res) => {
   try {
+    console.log('login In')
     const { bussinessemail, password } = req.body;
 
     const user = await User.findOne({ bussinessemail }).select('+password');

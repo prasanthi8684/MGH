@@ -7,27 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export const uploadImages = async (req, res) => {
   try {
+   
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
     }
 
-    const imageUrls = await Promise.all(req.files.map(async (file) => {
-      // Process image with sharp to optimize it
-      const optimizedBuffer = await sharp(file.buffer)
-        .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
-        .jpeg({ quality: 80 })
-        .toBuffer();
-
-      const filename = `${Date.now()}-${file.originalname}`;
-      const filePath = path.join(__dirname, '..', 'uploads', filename);
-      
-      await fs.writeFile(filePath, optimizedBuffer);
-      
-      // Return the URL that can be used to access the image
-      const relativePath = `/uploads/${filename}`;
-      const fullUrl = `http://localhost:5000${relativePath}`;
-      return fullUrl;
-    }));
+    const imageUrls = req.files[0].location;
     
     res.json({ imageUrls });
   } catch (error) {
