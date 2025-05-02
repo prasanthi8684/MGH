@@ -14,7 +14,8 @@ export const sendEmail = async ({ to, subject, proposal, pdfBuffer }) => {
   console.log('test mail')
   const mailOptions = {
     from: `"MH GLOBAL" <${process.env.SMTP_USER}>`,
-    to:'prasanthileela2007@gmail.com',
+    to:`${proposal.clientEmail}`,
+    cc: 'hussain.moez@mhglobal.com',
     subject,
     html: `
       <div style="font-family: Arial, sans-serif; color: #333;">
