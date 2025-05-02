@@ -1,9 +1,26 @@
 import PDFDocument from 'pdfkit';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import axios from 'axios';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+export const downloadImageToLocal = async (url, filename)=> {
+  const localPath = path.join(__dirname, 'temp', filename);
+  const response = await axios.get(url, { responseType: 'stream' });
+
+  fs.mkdirSync(path.dirname(localPath), { recursive: true });
+
+  const writer = fs.createWriteStream(localPath);
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', () => resolve(localPath));
+    writer.on('error', reject);
+  });
+};
 
 export async function generateProposalPDF(proposal) {
   return new Promise((resolve, reject) => {
@@ -71,7 +88,8 @@ export async function generateProposalPDF(proposal) {
          .text('APPARELS • PREMIUM GIFTS • CREATIVE • EVENTS', 50, doc.page.height - 80);
 
       // Products Pages
-      proposal.products.forEach((product, index) => {
+      (async () => {
+      proposal.products.forEach(async (product, index) => {
         doc.addPage({ margin: 50 });
 
         // Product name
@@ -101,13 +119,25 @@ export async function generateProposalPDF(proposal) {
         doc.text(`RM ${product.unitPrice.toFixed(2)}`, 60, 300);
 
         // // Product image
-        // if (product.image) {
-        //   doc.image(product.image, 300, 150, {
-        //     fit: [250, 250],
-        //     align: 'center',
-        //     valign: 'center'
-        //   });
-        // }
+        if (product.image) {
+        // const imageResponse = await axios.get(product.image, { responseType: 'arraybuffer' });
+// const imageBuffer = Buffer.from(imageResponse.data, 'binary');
+
+// doc.image(imageBuffer, 300, 150, { fit: [250, 250] });
+
+
+         const imageUrl = product.image;
+         const ext = path.extname(imageUrl);
+         const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}${ext}`;
+         const localImagePath = await downloadImageToLocal(imageUrl, filename);
+         console.log(localImagePath) 
+         const normalizedPath = localImagePath.replace(/\\/g, "/");
+        console.log(normalizedPath)
+         doc.image('C:/Users/HP/Desktop/MGH/src/services/temp/testimage.png', 300, 150, {
+            fit: [250, 250],
+          
+          });
+        }
 
         // Price box
         doc.rect(50, 400, 200, 100)
@@ -124,7 +154,7 @@ export async function generateProposalPDF(proposal) {
            .text('PRODUCTION & DELIVERY', 50, 520)
            .text('LEAD TIME: 10-14 WORKING DAYS', 50, 540);
       });
-
+   });
       // Summary Page
       doc.addPage();
 

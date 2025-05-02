@@ -5,7 +5,7 @@ import { uploadImages } from './imageController.js';
 // Get user profile
 export const getProfile = async (req, res) => {
   try {
-    const userId = req.body._id;
+    const userId = req.body.id;
     console.log(userId)
     const user = await User.findById(userId).select('-password');
 
@@ -24,18 +24,19 @@ export const updateProfile = async (req, res) => {
   try {
    
     const { name, company, phone,id } = req.body;
-    const userId = id;
 
     let updateData = { name, company, phone };
-    updateData.avatar = req.file.location;
-    updateData.id= id
+    if(req.file){
+      updateData.avatar =  req.file.location;
+    }
+    //updateData._id= id
 
     const user = await User.findByIdAndUpdate(
       id,
       updateData,
       { new: true, select: '-password' }
     );
-    console.log(user)
+    //console.log(user)
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -132,7 +133,7 @@ export const getAddress = async (req, res) => {
 // Address management
 export const addAddress = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.body.id;
     const address = req.body;
 
     // If this is the first address or marked as default, update other addresses

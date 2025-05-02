@@ -11,6 +11,7 @@ const transporter = nodemailer.createTransport({
   });
 
 export const sendEmail = async ({ to, subject, proposal, pdfBuffer }) => {
+  console.log('test mail')
   const mailOptions = {
     from: `"MH GLOBAL" <${process.env.SMTP_USER}>`,
     to:'prasanthileela2007@gmail.com',
