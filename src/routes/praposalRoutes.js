@@ -27,7 +27,7 @@ const s3 = new S3Client({
     }),
   });
 // @ts-ignore
-router.post('/', upload.array('images', 5), createProposal);
+router.post('/', upload.single('image'), createProposal);
 router.get('/', getAllProposals);
 router.get('/:id/pdf', getProposalPDF);
 router.delete('/:id', deleteProposal);

@@ -21,6 +21,7 @@ import { sendEmail } from '../services/emailService.js';
 
 export const createProposal = async (req, res) => {
   try {
+    console.log(req.file)
     // Get image URLs from multer-s3 upload
     //const imageUrls = req.files ? req.files.map(file => file.location) : [];
     

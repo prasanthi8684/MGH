@@ -11,7 +11,7 @@ const spacesEndpoint = new AWS.Endpoint('https://mgh.blr1.digitaloceanspaces.com
 
 export const createProduct = async (req, res) => {
   try {
-    
+    console.log( req.file.location)
     const { name, description, price, quantity, category, subcategory } = req.body;
     const imageUrls = req.file.location;
 
@@ -29,7 +29,8 @@ export const createProduct = async (req, res) => {
       subcategory,
       images: imageUrls
     });
-
+    console.log(product)
+    console.log('--------------')
     await product.save();
     res.status(201).json(product);
   } catch (error) {

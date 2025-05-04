@@ -66,7 +66,7 @@ router.post('/login', login);
 //router.use(verifyToken);
 
 // Product routes
-router.post('/products', upload.single('image'), createProduct);
+router.post('/products', upload.single('images'), createProduct);
 router.get('/products', getProducts);
 router.get('/products/:id',  getProduct);
 router.put('/products/:id', upload.array('images', 5), updateProduct);
