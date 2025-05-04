@@ -9,6 +9,9 @@ import praposalRoutes from './src/routes/praposalRoutes.js';
 import imageRoutes from './src/routes/imageRoutes.js';
 import quotationRoutes from './src/routes/quotationRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
+import searchRoutes from './src/routes/searchRoutes.js';
+import smartGiftingRoutes from './src/routes/smartGiftingRoutes.js';
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -41,12 +44,11 @@ app.use('/api/proposals', praposalRoutes);
 app.use('/api/quotations', quotationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', imageRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/smart-gifting', smartGiftingRoutes);
+
 const PORT = process.env.PORT || 5000;
-// Configure CORS
-app.use(cors({
-  origin: 'http://localhost:5173', // Your frontend URL
-  credentials: true
-}));
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
