@@ -7,33 +7,41 @@ export const getAIRecommendations = async (req, res) => {
 
     // Get AI recommendations
     const aiSuggestions = await getGiftRecommendations(prompt, budget, quantity);
-
+    console.log(aiSuggestions)
     // Find matching products based on AI suggestions
-    const recommendations = await Product.find({
-      $and: [
-        {
-          $or: aiSuggestions.categories.map(category => ({
-            category: { $regex: category, $options: 'i' }
-          }))
-        },
-        {
-          price: {
-            $gte: aiSuggestions.minPrice,
-            $lte: aiSuggestions.maxPrice
-          }
-        },
-        {
-          quantity: { $gte: quantity }
-        }
-      ]
-    })
-    .select('name description category subcategory price images')
-    .sort({ score: { $meta: "textScore" } })
-    .limit(10);
-
+    // const recommendations = await Product.find({
+    //   $and: [
+    //     {
+    //       $or: aiSuggestions.categories.map(category => ({
+    //         category: { $regex: category, $options: 'i' }
+    //       }))
+    //     },
+    //     {
+    //       price: {
+    //         $gte: aiSuggestions.minPrice,
+    //         $lte: aiSuggestions.maxPrice
+    //       }
+    //     },
+    //     {
+    //       quantity: { $gte: quantity }
+    //     }
+    //   ]
+    // })
+    // .select('name description category subcategory price images')
+    // .sort({ score: { $meta: "textScore" } })
+    // .limit(10);
+    const giftOptions = aiSuggestions.gifts.map((gift, index) => ({
+      _id: String(index + 1),
+      name: `${gift.category} - ${gift.subcategory}`,
+      price: (gift.minPrice + gift.maxPrice) / 2, // or use minPrice
+      image: [gift.image],
+      subcategory: gift.subcategory,
+      category: gift.category,
+      description:  gift.description,
+      quantity: 3,
+    }));
     res.json({
-      suggestions: aiSuggestions,
-      products: recommendations
+      products: giftOptions
     });
   } catch (error) {
     console.error('AI recommendations error:', error);

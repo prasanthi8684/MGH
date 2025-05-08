@@ -38,16 +38,18 @@ export const createProposal = async (req, res) => {
       totalAmount: products.reduce((sum, product) => sum + (product.quantity * product.unitPrice), 0)
     });
     const pdfBuffer = await generateProposalPDF(proposal);
-  
-    await sendEmail({
-      to: proposal.clientEmail,
-      subject: `Proposal: ${proposal.name}`,
-      proposal,
-      pdfBuffer
-    });
+    if(req.body.status == "sent") {
+      await sendEmail({
+        to: proposal.clientEmail,
+        subject: `Proposal: ${proposal.name}`,
+        proposal,
+        pdfBuffer
+      });
+    }
+    
 
     // Update proposal status to sent
-    proposal.status = 'sent';
+    proposal.status = req.body.status;
     await proposal.save();
     res.status(201).json(proposal);
   } catch (error) {
