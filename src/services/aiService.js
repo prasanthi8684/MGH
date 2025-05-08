@@ -23,6 +23,8 @@ export async function getGiftRecommendations(prompt, budget, quantity) {
             Format the response as a JSON array with objects containing:
             - category (string)
             - subcategory (string)
+            - description (string)
+            - image (string, provide a full URL to a representative image with papular web sites valid full URL ending in .jpg or .png)
             - keywords (array of strings)
             - minPrice (number)
             - maxPrice (number)`
