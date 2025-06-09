@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    required: [true, 'Please add an Profile Image'],
+    required: [false, 'Please add an Profile Image'],
   },
 
   jobRole: {
