@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 import fs from 'fs';
+import https from 'https';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,8 +89,9 @@ export async function generateProposalPDF(proposal) {
          .text('APPARELS • PREMIUM GIFTS • CREATIVE • EVENTS', 50, doc.page.height - 80);
 
       // Products Pages
-      (async () => {
-      proposal.products.forEach(async (product, index) => {
+      for (const product of proposal.products) {
+
+    
         doc.addPage({ margin: 50 });
 
         // Product name
@@ -126,17 +128,29 @@ export async function generateProposalPDF(proposal) {
 // doc.image(imageBuffer, 300, 150, { fit: [250, 250] });
 
 
-         const imageUrl = product.image;
-         const ext = path.extname(imageUrl);
-         const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}${ext}`;
-         const localImagePath = await downloadImageToLocal(imageUrl, filename);
-         console.log(localImagePath) 
-         const normalizedPath = localImagePath.replace(/\\/g, "/");
-        console.log(normalizedPath)
-         doc.image('C:/Users/HP/Desktop/MGH/src/services/temp/testimage.png', 300, 150, {
-            fit: [250, 250],
+          const imageUrl = product.image;
+      //    const ext = path.extname(imageUrl);
+      //    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}${ext}`;
+      //    const localImagePath = await downloadImageToLocal(imageUrl, filename);
+      //    console.log(localImagePath) 
+      //    const normalizedPath = localImagePath.replace(/\\/g, "/");
+      //   console.log(normalizedPath)
+         // doc.image(imageUrl, 300, 150, {
+         //    fit: [250, 250],
           
-          });
+         //  });
+            https.get(imageUrl, (res) => {
+            doc.pipe(fs.createWriteStream('image-pdf.pdf'));
+
+            const chunks = [];
+            res.on('data', chunk => chunks.push(chunk));
+            res.on('end', () => {
+               const buffer = Buffer.concat(chunks);
+               doc.image(buffer, 50, 50, { width: 500 });
+               doc.end();
+            });
+            });
+
         }
 
         // Price box
@@ -153,8 +167,8 @@ export async function generateProposalPDF(proposal) {
            .fontSize(12)
            .text('PRODUCTION & DELIVERY', 50, 520)
            .text('LEAD TIME: 10-14 WORKING DAYS', 50, 540);
-      });
-   });
+      }
+   
       // Summary Page
       doc.addPage();
 
