@@ -5,7 +5,8 @@ import {
   getQuotations,
   getQuotationById,
   downloadQuotationPDF,
-  deleteQuotation
+  deleteQuotation,
+  updateQuotationById
 } from '../controllers/quotationController.js';
 
 const router = express.Router();
@@ -34,6 +35,7 @@ const upload = multer({
 router.post('/',  createQuotation);
 router.get('/', getQuotations);
 router.get('/:id', getQuotationById);
+router.put('/:id', updateQuotationById);
 router.get('/:id/pdf', downloadQuotationPDF);
 router.delete('/:id', deleteQuotation);
 

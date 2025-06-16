@@ -5,12 +5,14 @@ import cors from 'cors';
 import { connectDB } from './src/config/database.js';
 import authRoutes from './src/routes/authRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
+import productRoutes from './src/routes/productRoutes.js';
 import praposalRoutes from './src/routes/praposalRoutes.js';
 import imageRoutes from './src/routes/imageRoutes.js';
 import quotationRoutes from './src/routes/quotationRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
 import searchRoutes from './src/routes/searchRoutes.js';
 import smartGiftingRoutes from './src/routes/smartGiftingRoutes.js';
+import cartRoutes from './src/routes/cartRoutes.js';
 
 import fs from 'fs';
 import path from 'path';
@@ -46,7 +48,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/upload', imageRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/smart-gifting', smartGiftingRoutes);
-
+app.use('/api/cart', cartRoutes);
 const PORT = process.env.PORT || 5000;
 
 

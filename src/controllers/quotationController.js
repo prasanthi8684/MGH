@@ -2,6 +2,8 @@ import Quotation from '../models/Quotation.js';
 import { uploadImages } from './imageController.js';
 //import { generateQuotationPDF } from '../services/pdfGenerator.js';
 import { generateProposalPDF } from '../../pdfGenerator.js';
+import { sendEmail } from '../services/emailService.js';
+
 
 export const createQuotation = async (req, res) => {
   try {
@@ -17,6 +19,15 @@ export const createQuotation = async (req, res) => {
       }));
     }
 
+ const pdfBuffer = await generateProposalPDF(quotationData);
+   // if(req.body.status == "sent") {
+      await sendEmail({
+        to: quotationData.clientEmail,
+        subject: `Proposal: ${quotationData.name}`,
+        proposal: quotationData,
+        pdfBuffer
+      });
+    //}
     const quotation = new Quotation(quotationData);
     await quotation.save();
 
@@ -78,6 +89,30 @@ export const deleteQuotation = async (req, res) => {
     res.json({ message: 'Quotation deleted successfully' });
   } catch (error) {
     console.error('Error deleting quotation:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const updateQuotationById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    
+    const quotation = await Quotation.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    );
+
+    if (!quotation) {
+      return res.status(404).json({ error: 'Quotation not found' });
+    }
+
+    res.json(quotation);
+  } catch (error) {
+    console.error('Error updating Quotation:', error);
     res.status(500).json({ error: error.message });
   }
 };

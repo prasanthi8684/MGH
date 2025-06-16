@@ -2,6 +2,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Admin from '../../src/models/Admin.js';
+import { User } from '../models/User.js';
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -11,7 +12,6 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    console.log(password)
     const isValidPassword = await admin.comparePassword(password);
     console.log(isValidPassword)
     if (!isValidPassword) {
@@ -45,6 +45,29 @@ export const verifyToken = async (req, res, next) => {
     const admin = await Admin.findById(decoded.id);
     if (!admin) {
       return res.status(401).json({ error: 'Admin not found' });
+    }
+    
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+export const verifyTokenUser = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token,'MHG@2025');
+//req.user.id = decoded.id;
+     req.user = { id: decoded.id };
+    // Verify admin still exists
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ error: 'user not found' });
     }
     
     next();

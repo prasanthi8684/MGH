@@ -7,30 +7,67 @@ import multer from 'multer';
 import { S3Client } from '@aws-sdk/client-s3';
 const spacesEndpoint = new AWS.Endpoint('https://mgh.blr1.digitaloceanspaces.com'); // use your region
 
+export const getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
 
+    res.json(product);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getProductPrice = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity } = req.query;
+    
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const qty = parseInt(quantity) || 1;
+    let price = 0;
+    if (product.priceTiers && Array.isArray(product.priceTiers)) {
+      const tier = product.priceTiers.find(
+        t => qty >= t.minQuantity && qty <= t.maxQuantity
+      );
+      if (tier) {
+        price = tier.price;
+      }
+    }
+    res.json({ price, quantity: qty });
+  } catch (error) {
+    console.error('Error getting product price:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 export const createProduct = async (req, res) => {
   try {
     console.log( req.file.location)
-    const { name, description, price, quantity, category, subcategory } = req.body;
+    const { name, description, category,priceTiers, subcategory,basePrice,quantity } = req.body;
     const imageUrls = req.file.location;
-
-    // const imageUrls = await Promise.all(
-    //   imageFiles.map(file => uploadImage(file))
-    // );
-    // const imageUrls =uploadImage(imageFiles);
-    // console.log(imageUrls)
+  
     const product = new Product({
       name,
       description,
-      price,
-      quantity,
+      priceTiers:JSON.parse(priceTiers),
       category,
       subcategory,
+      quantity,
+      price: basePrice,
+      basePrice,// Assuming basePrice is the default price
       images: imageUrls
     });
-    console.log(product)
-    console.log('--------------')
+    
     await product.save();
     res.status(201).json(product);
   } catch (error) {

@@ -1,10 +1,18 @@
 import { User } from '../models/User.js';
-import { generateToken } from '../utils/generateToken.js';
 import { sendEmail } from '../utils/sendEmail.js';
+import jwt from 'jsonwebtoken';
 
 export const test = async (req, res) => {
   console.log('Welcome to APIs')
 };
+const generateToken = (userId) => {
+  return jwt.sign(
+    { id: userId },
+    process.env.JWT_SECRET || 'MGH@2025',
+    { expiresIn: '7d' }
+  );
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
