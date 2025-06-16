@@ -1,5 +1,8 @@
 import OpenAI from 'openai';
 
+const openai = new OpenAI({
+  apiKey: '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'
+});
 
 export async function getGiftRecommendations(prompt, budget, quantity) {
   try {
