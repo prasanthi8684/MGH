@@ -68,7 +68,7 @@ export const downloadQuotationPDF = async (req, res) => {
     if (!quotation) {
       return res.status(404).json({ error: 'Quotation not found' });
     }
-
+   // console.log('Generating PDF for quotation:', quotation);
     const pdfBuffer = await generateProposalPDF(quotation);
     
     res.setHeader('Content-Type', 'application/pdf');

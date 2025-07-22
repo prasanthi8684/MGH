@@ -6,6 +6,16 @@ import axios from 'axios';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+function drawFullPageImage(doc, imgBuffer) {
+  doc.image(imgBuffer, 0, 0, {
+    fit: [doc.page.width, doc.page.height],
+    align: 'center',
+    valign: 'center'
+  });
+}
+
+
 export function generateProposalPDF(proposal) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -30,10 +40,12 @@ export function generateProposalPDF(proposal) {
           responseType: 'arraybuffer'
         });
         const cover1Buffer = Buffer.from(cover1Response.data, 'binary');
-        doc.image(cover1Buffer, 0, 0, {
-          width: doc.page.width,
-          height: doc.page.height
-        });
+        drawFullPageImage(doc, cover1Buffer);
+        // doc.image(cover1Buffer, 0, 0, {
+        //    fit: [doc.page.width, doc.page.height], // Keeps aspect ratio
+        //     align: 'center',
+        //     valign: 'center'
+        // });
         doc.addPage(); // Move to next page
       } catch (err) {
         console.error("Failed to load cover page 1:", err.message);
@@ -46,8 +58,9 @@ export function generateProposalPDF(proposal) {
         });
         const cover2Buffer = Buffer.from(cover2Response.data, 'binary');
         doc.image(cover2Buffer, 0, 0, {
-          width: doc.page.width,
-          height: doc.page.height
+           fit: [doc.page.width, doc.page.height], // Keeps aspect ratio
+          align: 'center',
+          valign: 'center'
         });
         doc.addPage(); // Move to next page
       } catch (err) {
@@ -74,7 +87,7 @@ export function generateProposalPDF(proposal) {
       for (const product of proposal.products) {
         //
         // proposal.products.forEach(async (product, index) => {
-        doc.addPage();
+       // doc.addPage();
 
         // Product Name
         // doc.fontSize(24)

@@ -52,10 +52,12 @@ export const getProductPrice = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    console.log( req.file.location)
     const { name, description, category,priceTiers, subcategory,basePrice,quantity } = req.body;
-    const imageUrls = req.file.location;
-  
+   // const imageUrls = req.file.location;
+      // Get image URLs from multer-s3 upload (multiple files)
+    const imageUrls = req.files && Array.isArray(req.files) 
+      ? req.files.map(file => file.location) 
+      : [];
     const product = new Product({
       name,
       description,

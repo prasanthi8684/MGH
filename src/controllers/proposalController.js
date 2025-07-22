@@ -1,5 +1,5 @@
 import Proposal from '../models/Proposal.js';
-import { generateProposalPDF } from '../services/pdfGenerator.js';
+import { generateProposalPDF } from '../../pdfGenerator.js';
 import { sendEmail } from '../services/emailService.js';
 
 // export const createProposal = async (req, res) => {
@@ -122,7 +122,7 @@ export const getProposalPDF = async (req, res) => {
     if (!proposal) {
       return res.status(404).json({ error: 'Proposal not found' });
     }
-
+    //console.log('Generating PDF for proposal:', proposal);
     const pdfBuffer = await generateProposalPDF(proposal);
     
     res.setHeader('Content-Type', 'application/pdf');
