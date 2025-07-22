@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
-  apiKey: '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'
+  apiKey: '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'
 });
 
 export async function getGiftRecommendations(prompt, budget, quantity) {
@@ -11,7 +11,7 @@ export async function getGiftRecommendations(prompt, budget, quantity) {
       messages: [
         {
           role: "system",
-          content: "You are a gifting expert specializing in corporate and promotional gifts. Provide relevant gift suggestions based on the user's requirements."
+          content: "You are a gifting expert specializing in corporate and promotional gifts.ONLY suggest real products available from the website: https://www.mhglobal.com/ Filter strictly based on the user's given budget, quantity, and category. Provide at least 10 products if available."
         },
         {
           role: "user",
